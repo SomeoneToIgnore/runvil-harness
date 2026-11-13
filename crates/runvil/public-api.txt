@@ -121,6 +121,7 @@ auto runvil::plugin::PackRegistry: Freeze, !RefUnwindSafe, Send, Sync, Unpin, !U
 auto runvil::plugin::RenderContext: Freeze, RefUnwindSafe, Send, Sync, Unpin, UnwindSafe
 auto runvil::plugin::ServiceId: Freeze, RefUnwindSafe, Send, Sync, Unpin, UnwindSafe
 auto runvil::plugin::ToolContext: Freeze, !RefUnwindSafe, Send, Sync, Unpin, !UnwindSafe
+auto runvil::plugin::Tools: Freeze, !RefUnwindSafe, Send, Sync, Unpin, !UnwindSafe
 auto runvil::prompt::ArgsSchema: Freeze, RefUnwindSafe, Send, Sync, Unpin, UnwindSafe
 auto runvil::prompt::Frontmatter: Freeze, RefUnwindSafe, Send, Sync, Unpin, UnwindSafe
 auto runvil::prompt::RoleRequirements: Freeze, RefUnwindSafe, Send, Sync, Unpin, UnwindSafe
@@ -221,6 +222,7 @@ derives runvil::plugin::PackRegistry: Debug, Default
 derives runvil::plugin::RenderContext: Debug
 derives runvil::plugin::ServiceId: Clone, Copy, Debug, Eq, Hash, PartialEq
 derives runvil::plugin::ToolContext: Debug
+derives runvil::plugin::Tools: Debug, Default
 derives runvil::prompt::ArgsSchema: Clone, Debug, Default, Deserialize, Eq, PartialEq
 derives runvil::prompt::Frontmatter: Clone, Debug, Deserialize, Eq, PartialEq
 derives runvil::prompt::RoleRequirements: Clone, Copy, Debug, Deserialize, Eq, PartialEq
@@ -284,6 +286,7 @@ impl runvil::PromptFinder for runvil::harness::FindFilePrompt
 impl runvil::PromptFinder for runvil::harness::FindTextPrompt
 impl runvil::PromptFinder for runvil::harness::PromptSet
 impl runvil::harness::RunRecorder for runvil::harness::MemoryRecorder
+impl runvil::plugin::PackFactory for runvil::plugin::Tools
 impl runvil::vfs::Policy for runvil::vfs::AllowAll
 impl runvil::vfs::Policy for runvil::vfs::ModePolicy
 impl runvil::vfs::Vfs for runvil::vfs::MemoryBackend
@@ -331,6 +334,9 @@ pub const runvil::model::ModelId::GATEWAY: &'static str
 pub const runvil::model::ModelRole::ALL: [runvil::model::ModelRole; 5]
 pub const runvil::model::Role::ALL: &'static [runvil::model::Role]
 pub const runvil::plugin::TOKIO_RUNTIME: &str
+pub const runvil::plugin::Tool::DESCRIPTION: &'static str
+pub const runvil::plugin::Tool::NAME: &'static str
+pub const runvil::plugin::Tool::TRUST: runvil::OutputTrust
 pub enum runvil::ErrorCode
 pub enum runvil::ErrorFact
 pub enum runvil::harness::RecordKind
@@ -536,10 +542,12 @@ pub fn runvil::plugin::PackRegistry::into_entries(self) -> impl core::iter::trai
 pub fn runvil::plugin::PackRegistry::list(&self) -> impl core::iter::traits::iterator::Iterator<Item = (&runvil::plugin::PackInfo, runvil::plugin::PackOrigin)>
 pub fn runvil::plugin::PackRegistry::new() -> runvil::plugin::PackRegistry
 pub fn runvil::plugin::RenderContext::new(entry: &'a str, model: &'a runvil::model::ModelInfo) -> Self
+pub fn runvil::plugin::Tool::call(&self, cx: runvil::plugin::ToolContext<'_>, args: <Self as runvil::plugin::Tool>::Args) -> impl core::future::future::Future<Output = core::result::Result<<Self as runvil::plugin::Tool>::Output, runvil::Error>> + core::marker::Send
 pub fn runvil::plugin::ToolContext::access(&self) -> &'a runvil::vfs::Access
 pub fn runvil::plugin::ToolContext::new(tool: &'a runvil::ToolId, access: &'a runvil::vfs::Access, origin: &'a runvil::effect::ToolCallOrigin) -> Self
 pub fn runvil::plugin::ToolContext::origin(&self) -> &'a runvil::effect::ToolCallOrigin
 pub fn runvil::plugin::ToolContext::tool(&self) -> &'a runvil::ToolId
+pub fn runvil::plugin::Tools::with(self, tool: impl runvil::plugin::Tool) -> runvil::plugin::Tools
 pub fn runvil::prompt::ArgsSchema::as_json(&self) -> &serde_json::value::Value
 pub fn runvil::prompt::Frontmatter::args(&self) -> &runvil::prompt::ArgsSchema
 pub fn runvil::prompt::Frontmatter::description(&self) -> &str
@@ -1186,6 +1194,7 @@ pub struct runvil::plugin::PackRegistry { /* private fields */ }
 pub struct runvil::plugin::ServiceId { /* private fields */ }
 pub struct runvil::plugin::ServiceKey<T: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static> { /* private fields */ }
 pub struct runvil::plugin::ToolContext<'a> { /* private fields */ }
+pub struct runvil::plugin::Tools { /* private fields */ }
 pub struct runvil::prompt::ArgsSchema { /* private fields */ }
 pub struct runvil::prompt::Frontmatter { /* private fields */ }
 pub struct runvil::prompt::RoleRequirements { /* private fields */ }
@@ -1207,7 +1216,10 @@ pub trait runvil::harness::RunRecorder: core::marker::Send + core::marker::Sync
 pub trait runvil::harness::Timer: core::marker::Send + core::marker::Sync
 pub trait runvil::plugin::Pack: core::marker::Send + core::marker::Sync
 pub trait runvil::plugin::PackFactory: core::marker::Send + core::marker::Sync
+pub trait runvil::plugin::Tool: core::marker::Send + core::marker::Sync + 'static
 pub trait runvil::vfs::Policy: core::marker::Send
 pub trait runvil::vfs::Vfs: core::marker::Send
 pub trait runvil::vfs::VfsAccess: core::marker::Send
 pub type runvil::BoxFuture<'a, T> = core::pin::Pin<alloc::boxed::Box<dyn core::future::future::Future<Output = T> + core::marker::Send + 'a>>
+pub type runvil::plugin::Tool::Args: serde_core::de::DeserializeOwned + schemars::JsonSchema + core::marker::Send
+pub type runvil::plugin::Tool::Output: serde_core::ser::Serialize
