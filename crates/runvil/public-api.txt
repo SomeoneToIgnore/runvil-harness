@@ -286,6 +286,8 @@ impl runvil::PromptFinder for runvil::harness::FindFilePrompt
 impl runvil::PromptFinder for runvil::harness::FindTextPrompt
 impl runvil::PromptFinder for runvil::harness::PromptSet
 impl runvil::harness::RunRecorder for runvil::harness::MemoryRecorder
+impl runvil::plugin::IntoOutput for runvil::ToolOutput
+impl runvil::plugin::IntoOutput for runvil::ToolOutput { const STRUCTURED: bool }
 impl runvil::plugin::PackFactory for runvil::plugin::Tools
 impl runvil::vfs::Policy for runvil::vfs::AllowAll
 impl runvil::vfs::Policy for runvil::vfs::ModePolicy
@@ -303,12 +305,62 @@ impl<T: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static
 impl<T: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static> core::fmt::Debug for runvil::plugin::ServiceKey<T>
 impl<T: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static> core::marker::Copy for runvil::plugin::ServiceKey<T>
 impl<T: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static> runvil::plugin::ServiceKey<T>
+impl<T: serde_core::ser::Serialize> runvil::plugin::IntoOutput for T
+impl<T: serde_core::ser::Serialize> runvil::plugin::IntoOutput for T { const STRUCTURED: bool }
 impl<T> core::marker::Freeze for runvil::plugin::ServiceKey<T> where core::marker::PhantomData<fn() -> alloc::sync::Arc<T>>: core::marker::Freeze, T: ?core::marker::Sized
 impl<T> core::marker::Send for runvil::plugin::ServiceKey<T> where core::marker::PhantomData<fn() -> alloc::sync::Arc<T>>: core::marker::Send, T: ?core::marker::Sized
 impl<T> core::marker::Sync for runvil::plugin::ServiceKey<T> where core::marker::PhantomData<fn() -> alloc::sync::Arc<T>>: core::marker::Sync, T: ?core::marker::Sized
 impl<T> core::marker::Unpin for runvil::plugin::ServiceKey<T> where core::marker::PhantomData<fn() -> alloc::sync::Arc<T>>: core::marker::Unpin, T: ?core::marker::Sized
 impl<T> core::panic::unwind_safe::RefUnwindSafe for runvil::plugin::ServiceKey<T> where core::marker::PhantomData<fn() -> alloc::sync::Arc<T>>: core::panic::unwind_safe::RefUnwindSafe, T: ?core::marker::Sized
 impl<T> core::panic::unwind_safe::UnwindSafe for runvil::plugin::ServiceKey<T> where core::marker::PhantomData<fn() -> alloc::sync::Arc<T>>: core::panic::unwind_safe::UnwindSafe, T: ?core::marker::Sized
+impl<T> runvil::plugin::IntoOutput for runvil::OutputTrust where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::OutputTrust where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::RunSeed where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::RunSeed where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::Timestamp where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::Timestamp where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ToolId where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ToolId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ToolInfo where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ToolInfo where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::effect::ToolCallOrigin where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::effect::ToolCallOrigin where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::effect::ToolCaller where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::effect::ToolCaller where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::event::Event where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::event::Event where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::event::ReplyOrigin where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::event::ReplyOrigin where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ids::AbandonReason where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ids::AbandonReason where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ids::ChainId where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ids::ChainId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ids::Provenance where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ids::Provenance where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ids::RoundId where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ids::RoundId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::ids::TaskId where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::ids::TaskId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::CallMetrics where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::CallMetrics where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::ClientTiming where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::ClientTiming where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::LlamaTimings where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::LlamaTimings where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::ToolCallEvent where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::ToolCallEvent where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::Usage where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::Usage where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::VllmMetrics where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::metrics::VllmMetrics where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::model::Message where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::model::Message where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::model::Role where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::model::Role where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::model::ToolSchema where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::model::ToolSchema where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil::plugin::IntoOutput for runvil::packs::PackId where T: serde_core::ser::Serialize
+impl<T> runvil::plugin::IntoOutput for runvil::packs::PackId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
 pub async fn runvil::Harness::run(self) -> core::result::Result<runvil::RunReport, runvil::Error>
 pub const fn runvil::ErrorCode::number(self) -> u16
 pub const fn runvil::ErrorCode::prose(self) -> &'static str
@@ -333,10 +385,10 @@ pub const runvil::Timestamp::UNIX_EPOCH: runvil::Timestamp
 pub const runvil::model::ModelId::GATEWAY: &'static str
 pub const runvil::model::ModelRole::ALL: [runvil::model::ModelRole; 5]
 pub const runvil::model::Role::ALL: &'static [runvil::model::Role]
+pub const runvil::plugin::IntoOutput::STRUCTURED: bool
 pub const runvil::plugin::TOKIO_RUNTIME: &str
 pub const runvil::plugin::Tool::DESCRIPTION: &'static str
 pub const runvil::plugin::Tool::NAME: &'static str
-pub const runvil::plugin::Tool::TRUST: runvil::OutputTrust
 pub enum runvil::ErrorCode
 pub enum runvil::ErrorFact
 pub enum runvil::harness::RecordKind
@@ -531,6 +583,7 @@ pub fn runvil::plugin::HostServices::get<T: ?core::marker::Sized + core::marker:
 pub fn runvil::plugin::HostServices::new() -> runvil::plugin::HostServices
 pub fn runvil::plugin::HostServices::provide<T: ?core::marker::Sized + core::marker::Send + core::marker::Sync + 'static>(&mut self, key: &runvil::plugin::ServiceKey<T>, provider: alloc::sync::Arc<T>) -> core::result::Result<(), runvil::Error>
 pub fn runvil::plugin::HostServices::provides(&self, id: &runvil::plugin::ServiceId) -> bool
+pub fn runvil::plugin::IntoOutput::into_output(self) -> core::result::Result<runvil::ToolOutput, runvil::Error>
 pub fn runvil::plugin::Pack::call<'a>(&'a self, cx: runvil::plugin::ToolContext<'a>, args: serde_json::value::Value) -> runvil::BoxFuture<'a, core::result::Result<runvil::ToolOutput, runvil::Error>>
 pub fn runvil::plugin::Pack::ready(&self) -> runvil::BoxFuture<'_, core::result::Result<(), runvil::Error>> { .. }
 pub fn runvil::plugin::Pack::render<'a>(&'a self, _cx: runvil::plugin::RenderContext<'a>, offered: alloc::vec::Vec<runvil::ToolInfo>) -> runvil::BoxFuture<'a, alloc::vec::Vec<runvil::ToolInfo>> { .. }
@@ -543,6 +596,7 @@ pub fn runvil::plugin::PackRegistry::list(&self) -> impl core::iter::traits::ite
 pub fn runvil::plugin::PackRegistry::new() -> runvil::plugin::PackRegistry
 pub fn runvil::plugin::RenderContext::new(entry: &'a str, model: &'a runvil::model::ModelInfo) -> Self
 pub fn runvil::plugin::Tool::call(&self, cx: runvil::plugin::ToolContext<'_>, args: <Self as runvil::plugin::Tool>::Args) -> impl core::future::future::Future<Output = core::result::Result<<Self as runvil::plugin::Tool>::Output, runvil::Error>> + core::marker::Send
+pub fn runvil::plugin::Tool::declare(&self, info: runvil::ToolInfo) -> core::result::Result<runvil::ToolInfo, runvil::Error> { .. }
 pub fn runvil::plugin::ToolContext::access(&self) -> &'a runvil::vfs::Access
 pub fn runvil::plugin::ToolContext::new(tool: &'a runvil::ToolId, access: &'a runvil::vfs::Access, origin: &'a runvil::effect::ToolCallOrigin) -> Self
 pub fn runvil::plugin::ToolContext::origin(&self) -> &'a runvil::effect::ToolCallOrigin
@@ -1214,6 +1268,7 @@ pub trait runvil::PromptFinder: core::marker::Send + core::marker::Sync
 pub trait runvil::harness::InferenceBroker: core::marker::Send + core::marker::Sync
 pub trait runvil::harness::RunRecorder: core::marker::Send + core::marker::Sync
 pub trait runvil::harness::Timer: core::marker::Send + core::marker::Sync
+pub trait runvil::plugin::IntoOutput
 pub trait runvil::plugin::Pack: core::marker::Send + core::marker::Sync
 pub trait runvil::plugin::PackFactory: core::marker::Send + core::marker::Sync
 pub trait runvil::plugin::Tool: core::marker::Send + core::marker::Sync + 'static
@@ -1222,4 +1277,4 @@ pub trait runvil::vfs::Vfs: core::marker::Send
 pub trait runvil::vfs::VfsAccess: core::marker::Send
 pub type runvil::BoxFuture<'a, T> = core::pin::Pin<alloc::boxed::Box<dyn core::future::future::Future<Output = T> + core::marker::Send + 'a>>
 pub type runvil::plugin::Tool::Args: serde_core::de::DeserializeOwned + schemars::JsonSchema + core::marker::Send
-pub type runvil::plugin::Tool::Output: serde_core::ser::Serialize
+pub type runvil::plugin::Tool::Output: runvil::plugin::IntoOutput

@@ -5,13 +5,12 @@ use std::sync::Arc;
 use runvil_types::error::{Error, ErrorCode};
 use runvil_types::future::BoxFuture;
 use runvil_types::packs::PackId;
-use runvil_types::tools::{OutputTrust, ToolId, ToolInfo, ToolOutput, make_tool_error};
+use runvil_types::tools::{IntoOutput, ToolId, ToolInfo, ToolOutput, make_tool_error};
 use schemars::generate::SchemaSettings;
 use schemars::transform::{RestrictFormats, transform_subschemas};
 use schemars::{JsonSchema, Schema};
-use serde::Serialize;
 use serde::de::DeserializeOwned;
-use serde_json::Value;
+use serde_json::{Value, json};
 
 use crate::{Pack, PackFactory, ToolContext};
 
@@ -21,14 +20,19 @@ pub trait Tool: Send + Sync + 'static {
     const NAME: &'static str;
     /// The one-sentence description the model reads.
     const DESCRIPTION: &'static str;
-    /// Whether every output is trusted or untrusted.
-    /// A script that calls a trusted tool receives the output as data.
-    const TRUST: OutputTrust;
     /// The arguments of one call.
     /// Their JSON Schema is the tool's parameter schema.
     type Args: DeserializeOwned + JsonSchema + Send;
-    /// What one call returns, which becomes the JSON text of the output.
-    type Output: Serialize;
+    /// What one call returns.
+    type Output: IntoOutput;
+
+    /// Returns the tool's declaration, given the one its constants and types make.
+    ///
+    /// # Errors
+    /// Returns the reason the tool cannot be declared, which makes its Pack unavailable to the run.
+    fn declare(&self, info: ToolInfo) -> Result<ToolInfo, Error> {
+        Ok(info)
+    }
 
     /// Performs one tool call.
     fn call(
@@ -55,12 +59,7 @@ impl Tools {
 
 impl fmt::Debug for Tools {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let names = self
-            .tools
-            .iter()
-            .map(|tool| tool.name())
-            .collect::<Vec<_>>();
-        f.debug_struct("Tools").field("tools", &names).finish()
+        f.debug_struct("Tools").finish_non_exhaustive()
     }
 }
 
@@ -76,8 +75,6 @@ impl PackFactory for Tools {
 }
 
 trait Erased: Send + Sync {
-    fn name(&self) -> &'static str;
-
     fn info(&self, pack: &PackId) -> Result<ToolInfo, Error>;
 
     fn run<'a>(
@@ -88,14 +85,10 @@ trait Erased: Send + Sync {
 }
 
 impl<T: Tool> Erased for T {
-    fn name(&self) -> &'static str {
-        T::NAME
-    }
-
     fn info(&self, pack: &PackId) -> Result<ToolInfo, Error> {
         let id = ToolId::parse(&format!("{pack}/{}", T::NAME))?;
         let info = ToolInfo::new(id, T::DESCRIPTION, parameters::<T::Args>());
-        Ok(info.structured(T::TRUST == OutputTrust::Trusted))
+        self.declare(info.structured(T::Output::STRUCTURED))
     }
 
     fn run<'a>(
@@ -116,21 +109,7 @@ impl<T: Tool> Erased for T {
                     format!("invalid arguments: {error}"),
                 )
             })?;
-            let output = self.call(cx, args).await?;
-            let text = serde_json::to_value(output)
-                .map_err(|error| {
-                    make_tool_error(
-                        ErrorCode::ToolOther,
-                        "the output could not be rendered as JSON",
-                    )
-                    .with_cause(&error)
-                })?
-                .to_string();
-            Ok(if T::TRUST == OutputTrust::Trusted {
-                ToolOutput::trusted(text)
-            } else {
-                ToolOutput::untrusted(text)
-            })
+            self.call(cx, args).await?.into_output()
         })
     }
 }
@@ -167,7 +146,10 @@ fn parameters<Args: JsonSchema>() -> Value {
         .into_root_schema_for::<Args>();
     schema.remove("$schema");
     schema.remove("title");
-    schema.to_value()
+    match schema.to_value() {
+        Value::Object(schema) if !schema.is_empty() => Value::Object(schema),
+        _ => json!({ "type": "object" }),
+    }
 }
 
 fn omit_null(schema: &mut Schema) {
@@ -206,8 +188,7 @@ mod tests {
 
     use runvil_types::tools::{ToolCallOrigin, ToolCaller};
     use runvil_vfs::{Origin, VfsRef};
-    use serde::Deserialize;
-    use serde_json::json;
+    use serde::{Deserialize, Serialize};
 
     use super::*;
 
@@ -233,13 +214,15 @@ mod tests {
                 .structured(true),
                 ToolInfo::new(
                     ToolId::parse("demo/shout").unwrap(),
-                    "Uppercase a text.",
+                    "Uppercase a text of at most 8 bytes.",
                     json!({
                         "type": "object",
                         "properties": { "text": { "type": "string" } },
                         "required": ["text"]
                     }),
-                ),
+                )
+                .wire_name("Shout")
+                .survives_stop(true),
             ]
         );
         assert_eq!(
@@ -248,7 +231,16 @@ mod tests {
         );
         assert_eq!(
             call(&*pack, "demo/shout", json!({ "text": "quiet" })),
-            Ok(ToolOutput::untrusted(r#""QUIET""#))
+            Ok(ToolOutput::trusted("QUIET"))
+        );
+        assert_eq!(
+            call_as(
+                ToolCaller::Model,
+                &*pack,
+                "demo/shout",
+                json!({ "text": "quiet" })
+            ),
+            Ok(ToolOutput::untrusted("QUIET"))
         );
     }
 
@@ -346,6 +338,7 @@ mod tests {
                 "required": ["slots"]
             })
         );
+        assert_eq!(parameters::<Value>(), json!({ "type": "object" }));
     }
 
     struct Scale;
@@ -366,7 +359,6 @@ mod tests {
     impl Tool for Scale {
         const NAME: &'static str = "scale";
         const DESCRIPTION: &'static str = "Multiply a number.";
-        const TRUST: OutputTrust = OutputTrust::Trusted;
         type Args = Factors;
         type Output = Scaled;
 
@@ -382,43 +374,62 @@ mod tests {
         }
     }
 
-    struct Shout;
-
-    #[derive(Deserialize, JsonSchema)]
-    struct Words {
-        text: String,
+    struct Shout {
+        limit: usize,
     }
 
     impl Tool for Shout {
         const NAME: &'static str = "shout";
         const DESCRIPTION: &'static str = "Uppercase a text.";
-        const TRUST: OutputTrust = OutputTrust::Untrusted;
-        type Args = Words;
-        type Output = String;
+        type Args = Value;
+        type Output = ToolOutput;
+
+        fn declare(&self, mut info: ToolInfo) -> Result<ToolInfo, Error> {
+            info.description = format!("Uppercase a text of at most {} bytes.", self.limit);
+            info.parameters_schema = json!({
+                "type": "object",
+                "properties": { "text": { "type": "string" } },
+                "required": ["text"]
+            });
+            Ok(info.wire_name("Shout").survives_stop(true))
+        }
 
         fn call(
             &self,
-            _cx: ToolContext<'_>,
-            words: Words,
-        ) -> impl Future<Output = Result<String, Error>> + Send {
-            future::ready(Ok(words.text.to_uppercase()))
+            cx: ToolContext<'_>,
+            args: Value,
+        ) -> impl Future<Output = Result<ToolOutput, Error>> + Send {
+            let text = args["text"].as_str().unwrap_or_default().to_uppercase();
+            future::ready(Ok(match cx.origin().caller {
+                ToolCaller::Script => ToolOutput::trusted(text),
+                _ => ToolOutput::untrusted(text),
+            }))
         }
     }
 
     fn pack() -> Arc<dyn Pack> {
         Tools::default()
             .with(Scale)
-            .with(Shout)
+            .with(Shout { limit: 8 })
             .new_pack(&PackId::parse("demo").unwrap())
             .unwrap()
     }
 
     fn call(pack: &dyn Pack, tool: &str, args: Value) -> Result<ToolOutput, Error> {
+        call_as(ToolCaller::Script, pack, tool, args)
+    }
+
+    fn call_as(
+        caller: ToolCaller,
+        pack: &dyn Pack,
+        tool: &str,
+        args: Value,
+    ) -> Result<ToolOutput, Error> {
         let tool = ToolId::parse(tool).unwrap();
         let access = VfsRef::default()
             .acquire(Origin::new("typed tool test"))
             .unwrap();
-        let origin = ToolCallOrigin::new("Demo", ToolCaller::Script);
+        let origin = ToolCallOrigin::new("Demo", caller);
         let mut answer = pin!(pack.call(ToolContext::new(&tool, &access, &origin), args));
         loop {
             if let Poll::Ready(output) = answer

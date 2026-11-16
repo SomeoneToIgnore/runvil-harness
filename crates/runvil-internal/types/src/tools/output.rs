@@ -1,6 +1,8 @@
 //! Tool output with mandatory trust, and the constructor of a tool call's
 //! failure.
 
+use serde::Serialize;
+
 use crate::error::{Error, ErrorCode};
 
 /// Whether a tool's output is trusted or must be treated as untrusted data.
@@ -59,6 +61,41 @@ impl ToolOutput {
     #[must_use]
     pub fn trust(&self) -> OutputTrust {
         self.trust
+    }
+}
+
+/// What a tool call can return.
+pub trait IntoOutput {
+    /// Whether the output text is a single JSON value, which a script receives as data.
+    const STRUCTURED: bool;
+
+    /// Returns the output of the call.
+    ///
+    /// # Errors
+    /// Returns a tool failure when the value cannot be rendered.
+    fn into_output(self) -> Result<ToolOutput, Error>;
+}
+
+impl IntoOutput for ToolOutput {
+    const STRUCTURED: bool = false;
+
+    fn into_output(self) -> Result<ToolOutput, Error> {
+        Ok(self)
+    }
+}
+
+impl<T: Serialize> IntoOutput for T {
+    const STRUCTURED: bool = true;
+
+    fn into_output(self) -> Result<ToolOutput, Error> {
+        let value = serde_json::to_value(self).map_err(|error| {
+            make_tool_error(
+                ErrorCode::ToolOther,
+                "the output could not be rendered as JSON",
+            )
+            .with_cause(&error)
+        })?;
+        Ok(ToolOutput::trusted(value.to_string()))
     }
 }
 

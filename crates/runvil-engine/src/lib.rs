@@ -40,6 +40,7 @@ pub use runvil_types::error::SourceLoc;
 /* Tool descriptions and catalogs, and the output or error that answers
    a tool call.
 */
+pub use runvil_types::tools::IntoOutput;
 pub use runvil_types::tools::OutputTrust;
 pub use runvil_types::tools::ToolCatalog;
 pub use runvil_types::tools::ToolId;

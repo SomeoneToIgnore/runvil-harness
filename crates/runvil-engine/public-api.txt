@@ -262,6 +262,8 @@ impl core::str::traits::FromStr for runvil_engine::packs::GlobalName
 impl core::str::traits::FromStr for runvil_engine::packs::GlobalName { type Err = runvil_engine::Error }
 impl core::str::traits::FromStr for runvil_engine::packs::PackId
 impl core::str::traits::FromStr for runvil_engine::packs::PackId { type Err = runvil_engine::Error }
+impl runvil_engine::IntoOutput for runvil_engine::ToolOutput
+impl runvil_engine::IntoOutput for runvil_engine::ToolOutput { const STRUCTURED: bool }
 impl runvil_engine::vfs::Policy for runvil_engine::vfs::AllowAll
 impl runvil_engine::vfs::Policy for runvil_engine::vfs::ModePolicy
 impl runvil_engine::vfs::Vfs for runvil_engine::vfs::MemoryBackend
@@ -276,12 +278,68 @@ impl<T: core::clone::Clone> core::clone::Clone for runvil_engine::effect::PackTo
 impl<T: core::cmp::Eq> core::cmp::Eq for runvil_engine::effect::PackToolSets<T>
 impl<T: core::cmp::PartialEq> core::cmp::PartialEq for runvil_engine::effect::PackToolSets<T>
 impl<T: core::fmt::Debug> core::fmt::Debug for runvil_engine::effect::PackToolSets<T>
+impl<T: serde_core::ser::Serialize> runvil_engine::IntoOutput for T
+impl<T: serde_core::ser::Serialize> runvil_engine::IntoOutput for T { const STRUCTURED: bool }
 impl<T> core::marker::Freeze for runvil_engine::effect::PackToolSets<T> where alloc::vec::Vec<T>: core::marker::Freeze + core::marker::Freeze
 impl<T> core::marker::Send for runvil_engine::effect::PackToolSets<T> where alloc::vec::Vec<T>: core::marker::Send + core::marker::Send
 impl<T> core::marker::Sync for runvil_engine::effect::PackToolSets<T> where alloc::vec::Vec<T>: core::marker::Sync + core::marker::Sync
 impl<T> core::marker::Unpin for runvil_engine::effect::PackToolSets<T> where alloc::vec::Vec<T>: core::marker::Unpin + core::marker::Unpin
 impl<T> core::panic::unwind_safe::RefUnwindSafe for runvil_engine::effect::PackToolSets<T> where alloc::vec::Vec<T>: core::panic::unwind_safe::RefUnwindSafe + core::panic::unwind_safe::RefUnwindSafe
 impl<T> core::panic::unwind_safe::UnwindSafe for runvil_engine::effect::PackToolSets<T> where alloc::vec::Vec<T>: core::panic::unwind_safe::UnwindSafe + core::panic::unwind_safe::UnwindSafe
+impl<T> runvil_engine::IntoOutput for runvil_engine::OutputTrust where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::OutputTrust where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::RunSeed where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::RunSeed where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::Timestamp where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::Timestamp where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ToolId where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ToolId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ToolInfo where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ToolInfo where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::effect::PackToolSets<T> where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::effect::PackToolSets<T> where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::effect::ToolCallOrigin where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::effect::ToolCallOrigin where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::effect::ToolCaller where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::effect::ToolCaller where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::event::Event where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::event::Event where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::event::ReplyOrigin where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::event::ReplyOrigin where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::AbandonReason where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::AbandonReason where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::ChainId where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::ChainId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::Provenance where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::Provenance where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::RoundId where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::RoundId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::TaskId where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::ids::TaskId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::CallMetrics where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::CallMetrics where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::ClientTiming where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::ClientTiming where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::LlamaTimings where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::LlamaTimings where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::ToolCallEvent where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::ToolCallEvent where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::Usage where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::Usage where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::VllmMetrics where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::metrics::VllmMetrics where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::model::Message where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::model::Message where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::model::Role where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::model::Role where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::model::ToolSchema where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::model::ToolSchema where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::packs::PackId where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::packs::PackId where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::vfs::VfsOp where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::vfs::VfsOp where T: serde_core::ser::Serialize { const STRUCTURED: bool }
+impl<T> runvil_engine::IntoOutput for runvil_engine::vfs::VfsOutcome where T: serde_core::ser::Serialize
+impl<T> runvil_engine::IntoOutput for runvil_engine::vfs::VfsOutcome where T: serde_core::ser::Serialize { const STRUCTURED: bool }
 impl<T> runvil_engine::effect::PackToolSets<T>
 impl<T> serde_core::ser::Serialize for runvil_engine::effect::PackToolSets<T> where T: serde_core::ser::Serialize
 pub const fn runvil_engine::ErrorCode::number(self) -> u16
@@ -296,6 +354,7 @@ pub const fn runvil_engine::ids::RoundId::get(self) -> u64
 pub const fn runvil_engine::ids::RoundId::new(id: u64) -> Self
 pub const fn runvil_engine::model::ModelRole::as_str(self) -> &'static str
 pub const fn runvil_engine::vfs::Access::id(&self) -> runvil_engine::vfs::ExecId
+pub const runvil_engine::IntoOutput::STRUCTURED: bool
 pub const runvil_engine::Timestamp::UNIX_EPOCH: runvil_engine::Timestamp
 pub const runvil_engine::model::ModelId::GATEWAY: &'static str
 pub const runvil_engine::model::ModelRole::ALL: [runvil_engine::model::ModelRole; 5]
@@ -312,6 +371,7 @@ pub fn runvil_engine::Error::located_message(&self) -> alloc::string::String
 pub fn runvil_engine::Error::new(code: runvil_engine::ErrorCode, message: impl core::convert::Into<alloc::string::String>, prose: impl core::convert::Into<alloc::string::String>) -> runvil_engine::Error
 pub fn runvil_engine::Error::with_cause(self, cause: &dyn core::error::Error + 'static) -> runvil_engine::Error
 pub fn runvil_engine::ErrorCode::from_tag(tag: &str) -> core::option::Option<runvil_engine::ErrorCode>
+pub fn runvil_engine::IntoOutput::into_output(self) -> core::result::Result<runvil_engine::ToolOutput, runvil_engine::Error>
 pub fn runvil_engine::Prompt::file(&self) -> &str
 pub fn runvil_engine::Prompt::frontmatter(&self) -> &runvil_engine::prompt::Frontmatter
 pub fn runvil_engine::Prompt::linked(&self) -> impl core::iter::traits::iterator::Iterator<Item = &alloc::sync::Arc<runvil_engine::Prompt>>
@@ -1179,6 +1239,7 @@ pub struct runvil_engine::vfs::VfsPath { /* private fields */ }
 pub struct runvil_engine::vfs::VfsPathBuf(/* private fields */)
 pub struct runvil_engine::vfs::VfsRef { /* private fields */ }
 pub struct runvil_engine::vfs::VfsRefBuilder { /* private fields */ }
+pub trait runvil_engine::IntoOutput
 pub trait runvil_engine::PromptFinder: core::marker::Send + core::marker::Sync
 pub trait runvil_engine::vfs::Policy: core::marker::Send
 pub trait runvil_engine::vfs::Vfs: core::marker::Send

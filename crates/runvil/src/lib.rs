@@ -115,6 +115,7 @@ pub mod plugin {
     //! the Host's own dependencies.
 
     pub use runvil_plugin::HostServices;
+    pub use runvil_plugin::IntoOutput;
     pub use runvil_plugin::Pack;
     pub use runvil_plugin::PackFactory;
     pub use runvil_plugin::PackInfo;

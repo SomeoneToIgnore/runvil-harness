@@ -23,7 +23,7 @@ mod registry;
 pub use ids::ToolId;
 pub use info::ToolInfo;
 pub use origin::{ToolCallOrigin, ToolCaller};
-pub use output::{OutputTrust, ToolOutput, make_tool_error};
+pub use output::{IntoOutput, OutputTrust, ToolOutput, make_tool_error};
 pub use registry::ToolCatalog;
 
 #[cfg(test)]
