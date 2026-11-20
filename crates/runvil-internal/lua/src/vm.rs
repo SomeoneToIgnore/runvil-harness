@@ -25,7 +25,6 @@ use crate::bindings::ToolSet;
 use crate::engine_globals::{LUA_LOG_CHARACTER_LIMIT, install_untrusted};
 use crate::error::{self, Error, Result};
 use crate::hardening::{CancelHook, harden, install_cancel_hook};
-use crate::iteration::install_deterministic_iteration;
 use crate::messages::MessageList;
 use crate::models::RawModelIds;
 use crate::program::LuaProgram;
@@ -193,9 +192,6 @@ impl SectionVm<Uninjected> {
             state: Uninjected,
         };
         if let Err(error) = harden(&vm.lua) {
-            return vm.construction_failed(error, emitter, section);
-        }
-        if let Err(error) = install_deterministic_iteration(&vm.lua) {
             return vm.construction_failed(error, emitter, section);
         }
         if let Err(error) = install_untrusted(&vm.lua, nonce) {
